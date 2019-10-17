@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Coding Challenge</title>
+
+    <style>
+        table {
+            width: 75%;
+            font: 18px Calibri;
+        }
+        table, th, td {
+            border: solid 1px #DDD;
+            border-collapse: collapse;
+            padding: 2px 3px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body onload="createTable()">
+    <p>Click the "Add New Row" button to add row to the table. Enter values in each row and press the "Submit" button.  <p>
+        <input type="button" id="addRow" value="Add New Row" onclick="addRow()" />
+    </p>
+
+    <!--THE CONTAINER WHERE WE'll ADD THE DYNAMIC TABLE-->
+    <div id="cont"></div>
+
+    <p><input type="button" id="bt" value="Submit" onclick="submit()" /></p>
+    <br>
+    <div id="tree"></div>
+</body>
+
+<link rel="stylesheet" href="./dist/treeview.min.css" />
+<script type="text/javascript" src="./dist/treeview.min.js"></script>
+<script>
+    // ARRAY FOR HEADER.
+    let arrHead = new Array();
+    arrHead = ['', 'Employee Name', 'Id', 'Manager Id'];      // SIMPLY ADD OR REMOVE VALUES IN THE ARRAY FOR TABLE HEADERS.
+    let arrData = [
+        {name:'Alan',id:'100',managerId: '150'},
+        {name:'Martin',id:'220',managerId: '100'},
+        {name:'Jamie',id:'150',managerId: ''},
+        {name:'Alex',id:'275',managerId: '100'},
+        {name:'Steve',id:'400',managerId: '150'},
+        {name:'David',id:'190',managerId: '400'}
+    ];
+
+    // FIRST CREATE A TABLE STRUCTURE BY ADDING A FEW HEADERS AND
+    // ADD THE TABLE TO YOUR WEB PAGE.
+    function createTable() {
+        let empTable = document.createElement('table');
+        empTable.setAttribute('id', 'empTable');            // SET THE TABLE ID.
+
+        let tr = empTable.insertRow(-1);
+
+        for (let h = 0; h < arrHead.length; h++) {
+            let th = document.createElement('th');          // TABLE HEADER.
+            th.innerHTML = arrHead[h];
+            tr.appendChild(th);
+        }
+
+        let div = document.getElementById('cont');
+        div.appendChild(empTable);    // ADD THE TABLE TO YOUR WEB PAGE.
+
+        let empTab = document.getElementById('empTable');
+
+        let rowCnt = empTab.rows.length;        // GET TABLE ROW COUNT.
+
+        for (let c = 0; c < arrData.length; c++) {
+            let tr = empTab.insertRow(rowCnt);      // TABLE ROW.
+            tr = empTab.insertRow(rowCnt);
+
+            let tdBut = document.createElement('td');          // TABLE DEFINITION.
+            tdBut = tr.insertCell(0);
+
+            // ADD A BUTTON.
+            let button = document.createElement('input');
+
+            // SET INPUT ATTRIBUTE.
+            button.setAttribute('type', 'button');
+            button.setAttribute('value', 'Remove');
+
+            // ADD THE BUTTON's 'onclick' EVENT.
+            button.setAttribute('onclick', 'removeRow(this)');
+
+            tdBut.appendChild(button);
+
+
+            let tdName = document.createElement('td');
+            tdName = tr.insertCell(1);
+
+            // CREATE AND ADD TEXTBOX IN NAME CELL.
+            let eleName = document.createElement('input');
+            eleName.setAttribute('type', 'text');
+            eleName.setAttribute('value', arrData[c].name);
+
+            tdName.appendChild(eleName);
+
+            let tdId = document.createElement('td');
+            tdId = tr.insertCell(2);
+
+            // CREATE AND ADD TEXTBOX IN NAME CELL.
+            let eleId = document.createElement('input');
+            eleId.setAttribute('type', 'text');
+            eleId.setAttribute('value', arrData[c].id);
+
+            tdId.appendChild(eleId);
+
+
+            let tdMan = document.createElement('td');
+            tdMan = tr.insertCell(3);
+
+            // CREATE AND ADD TEXTBOX IN NAME CELL.
+            let eleMan = document.createElement('input');
+            eleMan.setAttribute('type', 'text');
+            eleMan.setAttribute('value', arrData[c].managerId);
+
+            tdMan.appendChild(eleMan);
+
+            rowCnt++;
+        }
+    }
+
+    // ADD A NEW ROW TO THE TABLE.s
+    function addRow() {
+        let empTab = document.getElementById('empTable');
+
+        let rowCnt = empTab.rows.length;        // GET TABLE ROW COUNT.
+        let tr = empTab.insertRow(rowCnt);      // TABLE ROW.
+        tr = empTab.insertRow(rowCnt);
+
+        for (let c = 0; c < arrHead.length; c++) {
+            let td = document.createElement('td');          // TABLE DEFINITION.
+            td = tr.insertCell(c);
+
+            if (c === 0) {           // FIRST COLUMN.
+                // ADD A BUTTON.
+                let button = document.createElement('input');
+
+                // SET INPUT ATTRIBUTE.
+                button.setAttribute('type', 'button');
+                button.setAttribute('value', 'Remove');
+
+                // ADD THE BUTTON's 'onclick' EVENT.
+                button.setAttribute('onclick', 'removeRow(this)');
+
+                td.appendChild(button);
+            }
+            else {
+                // CREATE AND ADD TEXTBOX IN EACH CELL.
+                let ele = document.createElement('input');
+                ele.setAttribute('type', 'text');
+                ele.setAttribute('value', '');
+
+                td.appendChild(ele);
+            }
+        }
+    }
+
+    // DELETE TABLE ROW.
+    function removeRow(oButton) {
+        let empTab = document.getElementById('empTable');
+        empTab.deleteRow(oButton.parentNode.parentNode.rowIndex);       // BUTTON -> TD -> TR.
+    }
+
+    // EXTRACT AND SUBMIT TABLE DATA.
+    function submit() {
+        let myTab = document.getElementById('empTable');
+        let values = new Array();
+
+
+        // LOOP THROUGH EACH ROW OF THE TABLE.
+        for (let row = 1; row < myTab.rows.length - 1; row++) {
+            let data = {};
+
+            for (let c = 1; c < myTab.rows[row].cells.length; c++) {   // EACH CELL IN A ROW.
+
+                let element = myTab.rows.item(row).cells[c];
+                if (element.childNodes[0].getAttribute('type') === 'text') {
+                    if (c === 1){
+                        data.name = element.childNodes[0].value;
+                    }else if (c === 2){
+                        data.id = element.childNodes[0].value;
+                    }else if (c === 3){
+                        data.managerId = element.childNodes[0].value;
+                    }
+                }
+
+            }
+
+            if (myTab.rows[row].cells.length > 0) {
+                values.push(data);
+            }
+        }
+
+        // SHOW THE RESULT IN THE CONSOLE WINDOW.
+
+        let tree = list_to_tree(values);
+        console.log(tree);
+        let t = new TreeView(tree, 'tree');
+        t.expandAll();
+    }
+
+    function list_to_tree(list) {
+        let map = {}, node, roots = [], i;
+        for (i = 0; i < list.length; i += 1) {
+            map[list[i].id] = i; // initialize the map
+            list[i].children = []; // initialize the children
+        }
+        for (i = 0; i < list.length; i += 1) {
+            node = list[i];
+            if (node.managerId ) {
+                // if you have dangling branches check that map[node.managerId] exists
+                list[map[node.managerId]].children.push(node);
+            } else {
+                roots.push(node);
+            }
+        }
+        return roots;
+    }
+</script>
+</html>
